@@ -1,12 +1,13 @@
 
 // https://stackoverflow.com/questions/56514116/how-do-i-get-deviceorientationevent-and-devicemotionevent-to-work-on-safari
 
+var shakeThreshold = 25;
+
 function init() {
   checkDevice();
   checkProtocol();
-  const shakeThreshold = 25;
   const permissionStatus = localStorage.getItem("permissionStatus");
-  permission(permissionStatus, shakeThreshold);
+  permission(permissionStatus);
   addRequestListener(permissionStatus);
   addDeleteStorageListener();
 }
@@ -15,7 +16,6 @@ function checkDevice() {
   if (/iPhone|iPod/i.test(navigator.userAgent)) {
     document.getElementById("request").style.display = "block";
     document.getElementById("infoDevice").innerHTML = "iPhonenutzer";
-
   } else {
     document.getElementById("request").style.display = "none";
     document.getElementById("infoDevice").innerHTML = "nicht IPhonenutzer";
@@ -37,15 +37,15 @@ function checkProtocol() {
   }
 }
 
-function permission(permissionStatus, shakeThreshold) {
+function permission(permissionStatus) {
   if (permissionStatus === "granted") {
-    startShakeDetection(shakeThreshold);
+    startShakeDetection();
   } else if (typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function") {
     DeviceMotionEvent.requestPermission()
       .then(response => {
         if (response === "granted") {
           localStorage.setItem("permissionStatus", "granted");
-          startShakeDetection(shakeThreshold);
+          startShakeDetection();
         }
       })
       .catch(console.error);
@@ -54,7 +54,7 @@ function permission(permissionStatus, shakeThreshold) {
   }
 }
 
-function startShakeDetection(shakeThreshold) {
+function startShakeDetection() {
   document.getElementById("request").style.display = "none";
   window.addEventListener("devicemotion", e => {
     const acceleration = e.accelerationIncludingGravity;
@@ -71,16 +71,17 @@ function startShakeDetection(shakeThreshold) {
 function addRequestListener(permissionStatus) {
   const btn = document.getElementById("request");
   btn.addEventListener("click", () => {
-    permission(permissionStatus, shakeThreshold);
+    permission(permissionStatus);
   });
 }
 
-function addDeleteStorageListener() {
-  const deleteStorageBtn = document.getElementById("delete-storage");
-  deleteStorageBtn.addEventListener("click", deleteStorage);
-}
+// function addDeleteStorageListener() {
+//   const deleteStorageBtn = document.getElementById("delete-storage");
+//   deleteStorageBtn.addEventListener("click", deleteStorage);
+// }
 
-function deleteStorage() {
-  localStorage.removeItem("permissionStatus");
-  alert("Berechtigung zurückgesetzt. Bitte klicken Sie erneut auf 'Berechtigung anfordern'.");
-}
+// function deleteStorage() {
+//   localStorage.removeItem("permissionStatus");
+//   alert("Berechtigung zurückgesetzt. Bitte klicken Sie erneut auf 'Berechtigung anfordern'.");
+// }
+
