@@ -19,7 +19,7 @@ function checkDevice() {
   } else {
     document.getElementById("request").style.display = "none";
     document.getElementById("infoDevice").innerHTML = "nicht IPhonenutzer";
-    localStorage.setItem("permissionStatus", "granted");
+    startShakeDetection();
   }
 }
 
